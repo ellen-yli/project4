@@ -1,7 +1,7 @@
 library(shinydashboard)
 
 dashboardPage(
-  dashboardHeader(),
+  dashboardHeader(title = "Diabetes Prediction"),
   dashboardSidebar(),
   dashboardBody()
 )
