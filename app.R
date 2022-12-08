@@ -2,7 +2,7 @@ library(shiny)
 library(shinydashboard)
 
 ui<- dashboardPage(
-  dashboarHeader(),
+  dashboardHeader(),
   dashboardSidebar(),
   dashboardBody()
 )
