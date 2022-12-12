@@ -1,3 +1,4 @@
+# list all libraries
 library(shiny)
 library(shinydashboard)
 library(tidyverse)
@@ -11,8 +12,21 @@ diabetes<- read.csv("diabetes.csv")
 diabetes$Outcome <- as.factor(diabetes$Outcome)
 
 server <- function(input, output, session){
+ 
+  #create link to the dataset
   
-  #Create reactive dataframe
+  url<- a("Diabetes Dataset", href="https://www.kaggle.com/datasets/mathchi/diabetes-data-set?select=diabetes.csv")
+  output$tab <- renderUI({
+    tagList("URL link:", url)
+  })
+  
+  #Insert image
+ output$diab<- renderImage({
+   return(list(src = "diab.jpg", contentType = "image/jpg",alt="diab"))
+ }, deleteFile = FALSE)
+  
+  #Create reactive dataframe to to exploration
+ 
   diabetes_new <- reactive({
     diabetes[input$rows[1]:input$rows[2],input$variable]
   })
@@ -105,6 +119,8 @@ server <- function(input, output, session){
       pred_test<- predict(mod3(), test_set())
       confusionMatrix(pred_test,test_set()$Outcome)
     })
+    
+    # Create data page with functions of selecting rows/columns
     new_data<- reactive({
       data.frame(Pregnancies=input$Preg, Glucose=input$Glu, BloodPressure=input$BP, SkinThickness=input$ST, Insulin=input$Ins, BMI=input$BMI, DiabetesPedigreeFunction=input$DPF, Age=input$Age)
     })
@@ -113,7 +129,10 @@ server <- function(input, output, session){
       print(pred)
     })
     
-    diabetes_re<- reactive({diabetes[,-10]})
+    mydata<- reactive({
+      diabetes[,-10] %>% select(input$col) %>% slice(input$row[1]:input$row[2])  
+        })
+    output$mydata<- renderDataTable({ mydata() })
     
 }
 
