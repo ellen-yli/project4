@@ -61,8 +61,7 @@ server <- function(input, output, session){
   test_set<- reactive({
     diabetes %>% anti_join(train_set(), by=c("id"))
   })
-  observeEvent(input$button,{
-  ## Logistic regression model
+
   mod1<- reactive({
     train_control<- trainControl(method = "cv", number =10)
     logit<- train(Outcome ~., 
@@ -71,6 +70,7 @@ server <- function(input, output, session){
                   method = "glm",
                   family = binomial())
   })
+
     output$logit_sum<- renderPrint({
       print(summary(mod1()))
       })
@@ -97,9 +97,11 @@ server <- function(input, output, session){
     mod2<- reactive({
       class_tree<- rpart(Outcome ~., data= train_set()[,-10], method = 'class')
     })
+    
     output$class_plot<- renderPlot({
       rpart.plot(mod2(), extra = 106)
     })
+    
     output$pred_train <- renderPrint({
       pred_train<- predict(mod2(), train_set()[,-10], type = "class")
       table(train_set()$Outcome, pred_train)
@@ -108,6 +110,7 @@ server <- function(input, output, session){
       pred_test<- predict(mod2(), test_set()[,-10], type = "class")
       table(test_set()$Outcome, pred_test)
     })
+ 
 
     ## Random forest model
     mod3<- reactive({
@@ -115,6 +118,7 @@ server <- function(input, output, session){
                                 mtry = ncol(train_set()[,-10])/3,
                                 ntree = 100, importance = TRUE)
     })
+    
     output$rf_sum <- renderPrint({
       print(mod3())
     })
@@ -122,9 +126,9 @@ server <- function(input, output, session){
       pred_test<- predict(mod3(), test_set())
       confusionMatrix(pred_test,test_set()$Outcome)
     })
-  })
   
-    # Create data page with functions of selecting rows/columns
+  
+    # Create data page with functions of selecting rows/columns for prediction
     new_data<- reactive({
       data.frame(Pregnancies=input$Preg, Glucose=input$Glu, BloodPressure=input$BP, SkinThickness=input$ST, Insulin=input$Ins, BMI=input$BMI, DiabetesPedigreeFunction=input$DPF, Age=input$Age)
     })
@@ -132,7 +136,7 @@ server <- function(input, output, session){
       pred<- predict(mod1(), newdata=new_data(), type = "prob")
       print(pred)
     })
-    
+    # Data page to subset data
     mydata<- reactive({
       diabetes[,-10] %>% select(input$col) %>% slice(input$row[1]:input$row[2])  
         })
