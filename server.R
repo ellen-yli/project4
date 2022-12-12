@@ -8,6 +8,7 @@ library(rpart)
 library(rpart.plot)
 library(randomForest)
 
+# read the data
 diabetes<- read.csv("diabetes.csv")
 diabetes$Outcome <- as.factor(diabetes$Outcome)
 
@@ -20,26 +21,28 @@ server <- function(input, output, session){
     tagList("URL link:", url)
   })
   
-  #Insert image
+  # Insert image
  output$diab<- renderImage({
    return(list(src = "diab.jpg", contentType = "image/jpg",alt="diab"))
  }, deleteFile = FALSE)
   
-  #Create reactive dataframe to to exploration
+  #Create reactive data frame to do exploration
  
   diabetes_new <- reactive({
     diabetes[input$rows[1]:input$rows[2],input$variable]
   })
-  ## 
+  ## Histogram
   output$plot1<- renderPlot({
 
     hist(diabetes_new(),xlab = input$variable)
 
   })
+  ## Density plot
   output$plot2<- renderPlot({
     d<- density(diabetes_new())
     plot(d, main = "Kernel Density", xlab = input$variable)
   })
+  ## Statistical summaries
   output$summary<- renderPrint({
     summary(diabetes_new())
   }) 
@@ -72,7 +75,7 @@ server <- function(input, output, session){
       print(summary(mod1()))
       })
     
-    ## Accuracy on training data
+    ### Accuracy on training data
     output$logit_train_pro<- renderPrint({
       pred_train<- predict(mod1(), newdata=train_set()[,-10], type = "prob")
       pred_train$var<- as.numeric(pred_train[,1]<pred_train[,2])
@@ -81,7 +84,7 @@ server <- function(input, output, session){
       print(cm)
     })
     
-    ## Accuracy on testing data
+    ### Accuracy on testing data
     output$logit_test_pro<- renderPrint({
       pred_test<- predict(mod1(), newdata=test_set()[,-10], type = "prob")
       pred_test$var<- as.numeric(pred_test[,1]<pred_test[,2])

@@ -72,15 +72,18 @@ ui<- dashboardPage(
     # Third tab content
             tabItem(tabName = "ModelInfo",
                     fluidRow(
+                      # first model (logistic regression)
                       column(12,
                              span(h3("1. Generalized linear regression (Logistic regression)")),
                              span(h4("Generalized linear regression allow us to build a linear relationship between the response and predictors when their relationship is not linear. In this case, the response variable is categorical. However, this model is not for data which are correlated with each other."))
                              ),
               uiOutput("ex1"),
               column(12, span(h4("'P' is the probability of the event that we are interested in. In our case, 'P' will be the probability of having diabetes."))),
+              # second model (classification tree)
               column(12,
                      span(h3("2. Classification tree")),
                      span(h4("Classification tree is to analyze and predict the class via tree-building algorithms. Some of the advantages are easy to interpret and visualize, less effort for pre-processing of data and no need to make assumptions about classifier structure. However, overftting can be one of problems. A small change in the data trends might cause a big difference in the tree structure."))),
+              #third model (random forest)
               column(12,
                      span(h3("3. Random forest")),
                      span(h4("Random forest is a supervised machine learning algorith that is used widely in classification. Random Forests uses the same idea as bagging but only use a random subset of predictors for each booststrap. It will then average the results of the multiple trees created. Some of the advantages are no need to scale or transform the variables, handling well for both linear and non-linear reatltionships and balance the bias-variance trade-off. However, random forests are not easy to interpret and might be computationally intensive for large data sets.")))
