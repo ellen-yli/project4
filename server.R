@@ -58,7 +58,7 @@ server <- function(input, output, session){
   test_set<- reactive({
     diabetes %>% anti_join(train_set(), by=c("id"))
   })
-  
+  observeEvent(input$button,{
   ## Logistic regression model
   mod1<- reactive({
     train_control<- trainControl(method = "cv", number =10)
@@ -119,7 +119,8 @@ server <- function(input, output, session){
       pred_test<- predict(mod3(), test_set())
       confusionMatrix(pred_test,test_set()$Outcome)
     })
-    
+  })
+  
     # Create data page with functions of selecting rows/columns
     new_data<- reactive({
       data.frame(Pregnancies=input$Preg, Glucose=input$Glu, BloodPressure=input$BP, SkinThickness=input$ST, Insulin=input$Ins, BMI=input$BMI, DiabetesPedigreeFunction=input$DPF, Age=input$Age)
@@ -133,6 +134,14 @@ server <- function(input, output, session){
       diabetes[,-10] %>% select(input$col) %>% slice(input$row[1]:input$row[2])  
         })
     output$mydata<- renderDataTable({ mydata() })
+    
+    #Download the dataset
+    output$downloadData<- downloadHandler(filename = function(){
+      paste(input$mydata, ".csv", sep ="")
+    },
+    content = function(file){
+      write.csv(mydata(), file, row.names = FALSE)
+    })
     
 }
 

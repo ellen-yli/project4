@@ -126,7 +126,8 @@ ui<- dashboardPage(
             fluidRow(
               column(12, dataTableOutput("mydata"))
               
-            )
+            ),
+            downloadButton("downloadData", "Download")
   
 )))
 )
